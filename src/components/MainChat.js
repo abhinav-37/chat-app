@@ -47,6 +47,8 @@ const MainChat = ({ chat, messages, onSendMessage }) => {
     );
   }
 
+  console.log("messages:::", messages);
+
   return (
     <div className="main-chat">
       <div className="chat-header">

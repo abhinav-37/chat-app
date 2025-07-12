@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import Sidebar from './components/Sidebar';
 import MainChat from './components/MainChat';
 import { chatService } from './services/chatService';
@@ -79,11 +78,20 @@ function App() {
     try {
       const newMessage = await chatService.sendMessage(chatId, text);
       
-      // Update messages
-      setMessages(prev => ({
-        ...prev,
-        [chatId]: [...(prev[chatId] || []), newMessage]
-      }));
+      // Update messages - check for duplicate messages to handle React StrictMode
+      setMessages(prev => {
+        const existingMessages = prev[chatId] || [];
+        const isDuplicate = existingMessages.some(msg => msg.id === newMessage.id);
+        
+        if (isDuplicate) {
+          return prev; // Don't add duplicate message
+        }
+        
+        return {
+          ...prev,
+          [chatId]: [...existingMessages, newMessage]
+        };
+      });
       
       // Update chat's last message and timestamp
       setChats(prev => prev.map(chat => 
